@@ -15,7 +15,7 @@
 | MA212 概率论与数理统计    | CS必修 MA必修 | 2022 Fall   | 93   | A    |
 | CS207 数字逻辑            | CS必修 MA选修 | 2023 Fall   | 100  | A+   |
 | CS307 数据库原理          | CS必修 MA选修 | 2023 Fall   | 96   | A    |
-| CS202 计算机组成原理      | CS必修 MA不修 | 2024 Spring |      |      |
+| CS202 计算机组成原理      | CS必修 MA不修 | 2024 Spring | 97   | A+   |
 | CS201 离散数学            | CS必修 MA选修 | 2024 Spring |      |      |
 | MA234 大数据导论与实践    | CS选修 MA选修 | 2024 Spring |      |      |
 
