@@ -1420,17 +1420,48 @@ K-Means 的迭代结束条件是所有集群的质心都不再变化
 
 ### 最大期望算法 [Expectation-Maximization (EM) Algorithm]
 
-
-
-
+省略，考试对这一部分不做要求
 
 
 
 ### 谱聚类 (Spectral Clustering)
 
+**相似性图** 
 
+- $\epsilon$-邻域图： $v_i$ 和 $v_j$ 相连如果 $d(v_i,v_j)<\epsilon$ ，无权图，$\epsilon \sim (\log n/n)^p$，需要调参 $\epsilon$ 
+- k 近邻图：如果 $v_j$ 是 $v_i$ 的 k 近邻之一，则连接 $v_i$ 到 $v_j$ ，有向图；如果 $v_i$ 和 $v_j$ 是彼此的 k 近邻之间，则连接 $v_i$ 和 $v_j$ ，相互 k 最近邻图，无向；$k\sim \log n$ 
+- 全连通图：将所有具有正相似性的点连接起来；建模局部邻域关系；高斯相似度函数 $s(x_i,x_j) = exp(−\|x_i−x_j\|^ 2/(2σ^2))$，其中 $σ$ 控制邻域的宽度；邻接矩阵不是稀疏的；$σ\sim \epsilon$ 
 
+**拉普拉斯图**
 
+- 非归一化拉普拉斯图：$L=D-W$ 
+  - 有 $\bold{1}$ 作为特征向量对应 0 特征值
+  - 对称和正定：$\bold{f}^T\bold{L}\bold{f}=\frac{1}{2}\sum_{i,j}w_{ij}(f_i-f_j)^2$ 
+  - 非负的、实值的特征值：$0=\lambda_1\le \lambda_2\le...\le\lambda_n$ 
+  - 特征值 0 的特征空间由向量 $\bold{1}_{A_1}$，…，$\bold{1}_{A_k}$ 张成，其中 $A_1$，...，$A_k$ 是图中的 $k$ 个连通分量
+- 归一化拉普拉斯图
+  - 对称拉普拉斯函数：$L_{sym}=D^{-1/2}LD^{-1/2}$ 
+  - 随机游走拉普拉斯函数：$L_{rm}=D^{-1}L$ 
+  - 两者都有与 $L$ 相似的性质
+
+#### 谱聚类
+
+**Graph cut**：将 $G$ 分为 $K$ 组 $A_1$，…，$A_K$，其中 $A_i⊂V$，这相当于最小化图切割函数 $cut(A_1,…,A_K)=\frac{1}{2}\sum\limits_{k=1}^KW(A_k,\overline{A_k})$，其中 $W(A,B)=\sum_{i∈A,j∈B}w_{ij}$。简单的解由一个单例及其补组成。
+
+**RatioCut**：$RatioCut(A_1,…,A_K)=\frac{1}{2}\sum\limits_{k=1}^K\frac{W(A_k,\overline{A_k})}{|A_k|}$，其中 $|A|$ 是 $A$ 中的点的数量
+
+**Normalized cut**：$Ncut(A_1,…,A_K)=\frac{1}{2}\sum\limits_{k=1}^K\frac{W(A_k,\overline{A_k})}{vol(A_k)}$，其中 $vol(A_k)=\sum_{i\in A}d_i$，这个计算是 NP 困难的
+
+<div align="center">
+    <img src=".\\pic\\07_05.png" alt="" width="350">
+    <img src=".\\pic\\07_06.png" alt="" width="350">
+</div>
+
+谱聚类算法：
+
+<div align="center">
+    <img src=".\\pic\\07_07.png" alt="" width="450">
+</div>
 
 
 
@@ -1499,3 +1530,158 @@ SC 越大，说明聚类效果越好
 
 
 
+
+
+## 8. 降维 Dimensionality Reduction
+
+$f:\mathcal{X} \rightarrow \mathcal{Y}$，其中 $dim\mathcal{X} > dim\mathcal{Y}$ 
+
+降维的原因：
+
+- 在实际应用中，样本的数量是有限的
+- 由于高维数据的稀疏性，很容易进行过拟合
+- 很难训练一个好的模型来对边界数据 (在高维更多) 进行分类
+
+降维能做什么：
+
+- 数据压缩 (Data compression)
+- 去噪声
+- 通过映射和特征选择来进行特征提取 (比如 LASSO)
+- 降低空间和时间的复杂性，从而需要更少的参数和更小的计算能力
+- 可视化
+
+分类：
+
+- 线性降维
+  - Principal component analysis (PCA)
+  - Linear discriminant analysis (LDA)
+  - Independent component analysis (ICA)
+- 非线性降维
+  - Kernel based methods (Kernel PCA)
+  - Manifold learning (ISOMAP, Locally Linear Embedding (LLE), Multidimensional scaling (MDS), t-SNE)
+
+
+
+### PCA
+
+方差：$Var(X)=\mathbb{E}(X-\mathbb{E}X)^2$ 
+
+样本方差：$S^2=\frac{1}{n-1}\sum\limits_{i=1}^n(x_i-\overline{x})^2$ 
+
+相关系数：$Cov(X,Y)=\mathbb{E}(X-\mathbb{E}X)(Y-\mathbb{E}Y)$ 
+
+样本相关系数：$C=\frac{1}{n-1}\sum\limits_{i=1}^n(x_i-\overline{x})(y_i-\overline{y})$ 
+
+若 $X=(\bold{x_1},...,\bold{x_n})^T\in\mathbb{R}^{n\times p}$ 是样本矩阵，$C=\frac{1}{n-1}(X-\bold{1_n}\bold{\overline{x}}^T)^T(X-\bold{1_n}\bold{\overline{x}}^T)=\frac{1}{n-1}(X-\frac{1}{n}\bold{1_n}\bold{1_n}^TX)^T(X-\frac{1}{n}\bold{1_n}\bold{1_n}^TX)=\frac{1}{n-1}X^TJX$ ，其中 $J=\bold{I_n}-\frac{1}{n}\bold{1_n}\bold{1_n}^T$ 是一个秩为 $n-1$ 的投影矩阵
+
+#### PCA
+
+- PCA 通过使用正交变换，将一组强相关变量转换为另一组（通常要小得多）的弱相关变量
+- 这些新的变量被称为主成分 (principal components)
+- 新的变量集是原始变量的线性组合，其方差信息被尽可能地继承
+- 是无监督学习
+
+**可视化解释**
+
+假设一组二维数据遵循高斯分布 (但不限于高斯分布！)，通过采用较大方差（数据变异性较大）的方向，成功地降低到一维
+
+主轴的方向比其他方向包含更多的信息，因为较小的方差表明变量包含的信息几乎相同
+
+<div align="center">
+    <img src=".\\pic\\08_01.png" alt="" width="350">
+</div>
+
+#### 样本协方差矩阵的特征分解
+
+$\{e_i\}_{i=1}^p$ 是欧几里得空间的标准基，想找到另一组正交基 $\{\tilde{e_i}\}_{i=1}^p$ 使得随机向量 $v = \sum\limits_{i=1}^px_ie_i$ 可以在新的基中被表示 $v = \sum\limits_{i=1}^p\tilde{x_i}\tilde{e_i}$，且 $Var(\tilde{x_1})\ge...\ge Var(\tilde{x_n})$ 且对于 $i \neq j$ 有 $Cov({\tilde{x_i},\tilde{x_j}})\approx0$ 
+
+通过线性代数，由线性变换得到坐标变换 $(\tilde{e_1},...,\tilde{e_p})=(e_1,...,e_p)W$，其中 $W\in\mathbb{R}^{p\times p}$ ，并对分量系数进行了相应的变换 $x=W\tilde{x}$ 
+
+假设我们有 $n$ 个中心化的样本 $\{x_i\}_{i=1}^n$ 且 $\frac{1}{n}\sum\limits_{i=1}^nx_i=\bold{0_p}$ 
+$$
+X^T=(x_1,...,x_n)=W(\tilde{x_1},...,\tilde{x_n})=W\tilde{X}^T \\
+Cov(X)=\frac{1}{n-1}X^TX \\
+Cov(\tilde{X})=\frac{1}{n-1}\tilde{X}^T\tilde{X}=\frac{1}{n-1}W^TX^TXW=W^TCov(X)W
+$$
+它的对角线是 $Var(\tilde{x_1}),...,Var(\tilde{x_p})$ ，非对角线是 $\tilde{x_i}$ 和 $\tilde{x_j}$ 协方差
+
+需要 $Cov(\tilde{X})$ 几乎是对角线的，且对角线项递减，相当于进行特征分解：$Cov(X)=Odiag(\lambda_1,...,\lambda_p)O^T$，$O\in\mathbb{R}^{p\times p}$ 是正交矩阵且 $\lambda_1\ge...\ge\lambda_p\ge0$ 并让 $W = O$ 
+
+**解释：**
+
+- 转换后的变量中的方差：$Var(\tilde{x_i})=\lambda_i$，$Cov(X)$ 的特征值
+- 新的基，$W = O$ 的每一列
+- 百分比 $\frac{\lambda_i}{\sum\lambda_i}$ 代表新变量 $\tilde{x_i}$ 的重要性
+- 对于任意向量 $x\in\mathbb{R}^p$ ，对应的 $r$ 个主成分是这样表示的 $w_1^Tx,...,w_r^Tx$ 
+
+**从 Best Reconstruction 的角度**
+
+<div align="center">
+    <img src=".\\pic\\08_02.png" alt="" width="500">
+</div>
+
+#### PCA 算法
+
+<div align="center">
+    <img src=".\\pic\\08_03.png" alt="" width="500">
+</div>
+
+应用实例：
+
+<div align="center">
+    <img src=".\\pic\\08_04.png" alt="" width="350">
+    <img src=".\\pic\\08_05.png" alt="" width="350">
+</div>
+
+
+### LDA
+
+LDA 属于监督学习，在标签的基础上进行线性投影，以最大限度地提高低维类间点分散性（可变性）
+
+每个类中的样本数量为 $n_k$，总样本数量为 $n$ 
+
+第 $k$ 类样本的平均值为 $\mu_k=\frac{1}{n_k}\sum\limits_{i:x_i\in C_k}x_i$，所有样本的平均值为 $\mu$ 
+
+在投影之前，类间点散度为 $S_b=\sum\limits_{k=1}^K\frac{n_k}{n}(\mu_k-\mu)(\mu_k-\mu)^T$ ，投影后，投影矩阵为 $W_r\in\mathbb{R}^{p\times r}$ ，类间点散度为 $\tilde{S_b}=W_r^TS_bW_r$ 
+
+在投影之前，每个类 $C_k$ 的类内点散度 (方差) 为 $S_k=\frac{1}{n_k}\sum\limits_{i:x_i\in C_k}(x_i-\mu_k)(x_i-\mu_k)^T$ ，因此，类内点总散度是 $S_w=\sum\limits_{k=1}^K\frac{n_k}{n}S_k$ 
+
+投影后，每个类 $C_k$ 的类内点散度 (方差) 为 $\tilde{S_k}=W_r^TS_kW_r$ ，类内点总散度是 $\tilde{S_w}=W_r^TS_kW_r$  
+
+LDA 转化为优化问题即为，要找到一个 $W_r$，使得类间点散度 $\tilde{S_b}$ 最大而类内点散度 $\tilde{S_w}$ 最小，即
+$$
+\max\limits_{w}J(w)=\frac{w^TS_bw}{w^TS_ww}
+$$
+这和以下等价
+$$
+\max\limits_{w}J_b(w)=w^TS_bw,\ \ \ \text{subject}\ \text{to}\ w^TS_ww=1
+$$
+使用拉格朗日乘子法，定义 $L(w,\lambda)=w^TS_bw-\lambda(w^TS_ww-1)$ 
+$$
+\nabla_wL=2S_b-2\lambda S_ww=0\ \ \ \ \Rightarrow\ \ \ \ S_w^{-1}S_bw=\lambda w
+$$
+最优解的方向是 $S_w^{-1}S_b$ 的特征向量
+
+应用实例：
+
+<div align="center">
+    <img src=".\\pic\\08_06.png" alt="" width="350">
+    <img src=".\\pic\\08_07.png" alt="" width="350">
+</div>
+
+
+
+### PCA 与 LDA 对比
+
+- PCA
+  - 从样本协方差矩阵出发，找到方差最大的方向
+  - 无监督学习，作为训练前的步骤，必须与其他学习方法相结合
+- LDA
+  - 利用标签，找到投影，使之后分类变得更加明显
+  - 监督学习，可以用作分类或与其他学习方法相结合
+
+
+
+### 非线性降维
+
+考试不涉及，因此省略了 QAQ
