@@ -31,9 +31,9 @@
 | CS202 计算机组成原理      | 必修       | 否         | 2024 Spring | 97   | A+   |
 | CS201 离散数学            | 必修       | 选修       | 2024 Spring | 99   | A+   |
 | MA234 大数据导论与实践    | 选修       | 选修       | 2024 Spring | 94   | A    |
-| SWS3019*                  | 否         | 否         | 2024 Summer | /    | /    |
+| SWS3019*                  | 否         | 否         | 2024 Summer | /    | A+   |
 
 * 注1：必/选修为否指不计入专业选修课学分
 * 注2：CS203B 为非计系的数据结构与算法分析，计系必修为 CS203 DSAA 或 CS217 DSAA(H)
 * 注3：部分课程中包含的成绩分布**仅为**该学期的成绩分布，**表明大致情况**，但后续学期**可能有变化** 
-* **SWS3019***：该课程为新国立暑期项目 NUS SoC 的 SWS3019 Big Data Analysis and Visualization 课程
+* **SWS3019***：该课程为新国立暑期项目 NUS SoC 的 SWS3019 Big Data Analysis and Visualization 课程，等级为该暑期项目获得的最终评级
